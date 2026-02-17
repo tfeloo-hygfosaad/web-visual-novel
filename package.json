@@ -41,7 +41,7 @@
   },
   "lint-staged": {
     "*.{ts,tsx}": [
-      "next lint --fix"
+      "npm run lint"
     ]
   }
 }
