@@ -1,116 +1,135 @@
-create type entity_type as enum (
+-- Enum types
+CREATE TYPE entity_type AS ENUM (
   'character',
   'concept',
   'location',
   'item'
 );
 
-create type media_type as enum (
+CREATE TYPE media_type AS ENUM (
   'image',
   'audio',
   'youtube'
 );
 
-create type music_behavior as enum (
+CREATE TYPE music_behavior AS ENUM (
   'continue',
   'change',
   'stop'
 );
 
-create type page_status as enum (
+CREATE TYPE page_status AS ENUM (
   'draft',
   'published'
 );
 
-create type position_slots as enum (
+CREATE TYPE position_slots AS ENUM (
   'centre',
   'left',
   'right'
 );
 
-create table media_asset (
-  id uuid primary key default gen_random_uuid(),
-  type media_type not null,
-  url text not null,
+-- Tables
+CREATE TABLE media_asset (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  type media_type NOT NULL,
+  url text NOT NULL,
   thumbnail_url text,
-  created_at timestamptz default now()
+  created_at timestamptz DEFAULT now()
 );
 
-create table volume (
-  id uuid primary key default gen_random_uuid(),
-  title text not null,
-  thumbnail_id uuid references media_asset(id),
-  position int not null,
-  unique (position)
+CREATE TABLE volume (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  title text NOT NULL,
+  thumbnail_id uuid REFERENCES media_asset(id),
+  position int NOT NULL,
+  UNIQUE (position)
 );
 
-create table chapter (
-  id uuid primary key default gen_random_uuid(),
-  volume_id uuid not null references volume(id) on delete cascade,
-  title text not null,
-  thumbnail_id uuid references media_asset(id),
-  position int not null,
-  unique (volume_id, position)
+CREATE TABLE chapter (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  volume_id uuid NOT NULL REFERENCES volume(id) ON DELETE CASCADE,
+  title text NOT NULL,
+  thumbnail_id uuid REFERENCES media_asset(id),
+  position int NOT NULL,
+  UNIQUE (volume_id, position)
 );
 
-create table page (
-  id uuid primary key default gen_random_uuid(),
-  chapter_id uuid not null references chapter(id) on delete cascade,
+CREATE TABLE page (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  chapter_id uuid NOT NULL REFERENCES chapter(id) ON DELETE CASCADE,
   title text,
-  background_id uuid references media_asset(id),
-  thumbnail_id uuid references media_asset(id),
-  status page_status not null default 'draft',
-  music_behavior music_behavior not null default 'continue',
+  background_id uuid REFERENCES media_asset(id),
+  thumbnail_id uuid REFERENCES media_asset(id),
+  status page_status NOT NULL DEFAULT 'draft',
+  music_behavior music_behavior NOT NULL DEFAULT 'continue',
   music_track_id uuid,
-  global_position int not null unique,
-  position int not null,
-  content text not null,
-  unique (chapter_id, position)
+  global_position int NOT NULL UNIQUE,
+  position int NOT NULL,
+  content text NOT NULL,
+  UNIQUE (chapter_id, position)
 );
 
-create table music_track (
-  id uuid primary key default gen_random_uuid(),
-  media_asset_id uuid not null references media_asset(id) on delete cascade,
-  start_time int default 0,
+CREATE TABLE music_track (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  media_asset_id uuid NOT NULL REFERENCES media_asset(id) ON DELETE CASCADE,
+  start_time int DEFAULT 0,
   end_time int,
-  loop boolean default true,
-  created_at timestamptz default now()
+  loop boolean DEFAULT true,
+  created_at timestamptz DEFAULT now()
 );
 
-alter table page
-add constraint fk_page_music
-foreign key (music_track_id)
-references music_track(id);
+ALTER TABLE page
+  ADD CONSTRAINT fk_page_music
+  FOREIGN KEY (music_track_id)
+  REFERENCES music_track(id);
 
-create table entity (
-  id uuid primary key default gen_random_uuid(),
-  type entity_type not null,
-  slug text not null unique,
-  title text not null,
-  thumbnail_id uuid references media_asset(id),
-  created_at timestamptz default now()
+CREATE TABLE entity (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  type entity_type NOT NULL,
+  slug text NOT NULL UNIQUE,
+  title text NOT NULL,
+  thumbnail_id uuid REFERENCES media_asset(id),
+  created_at timestamptz DEFAULT now()
 );
 
-create table kb_chunk (
-  id uuid primary key default gen_random_uuid(),
-  entity_id uuid not null references entity(id) on delete cascade,
-  unlock_page_id uuid references page(id),
-  position int not null,
-  content text not null,
-  unique (entity_id, position)
+CREATE TABLE kb_chunk (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  entity_id uuid NOT NULL REFERENCES entity(id) ON DELETE CASCADE,
+  unlock_page_id uuid REFERENCES page(id),
+  position int NOT NULL,
+  content text NOT NULL,
+  UNIQUE (entity_id, position)
 );
 
-create table character_image (
-  id uuid primary key default gen_random_uuid(),
-  entity_id uuid not null references entity(id) on delete cascade,
-  label text not null,
-  media_asset_id uuid not null references media_asset(id) on delete cascade
+CREATE TABLE character_image (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  entity_id uuid NOT NULL REFERENCES entity(id) ON DELETE CASCADE,
+  label text NOT NULL,
+  media_asset_id uuid NOT NULL REFERENCES media_asset(id) ON DELETE CASCADE
 );
 
-create table page_character (
-  id uuid primary key default gen_random_uuid(),
-  page_id uuid not null references page(id) on delete cascade,
-  character_image_id uuid not null references character_image(id) on delete cascade,
-  position_slot position_slots not null,
-  z_index int not null default 0
+CREATE TABLE page_character (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  page_id uuid NOT NULL REFERENCES page(id) ON DELETE CASCADE,
+  character_image_id uuid NOT NULL REFERENCES character_image(id) ON DELETE CASCADE,
+  position_slot position_slots NOT NULL,
+  z_index int NOT NULL DEFAULT 0
 );
+
+-- Indexes for foreign key columns and common lookup patterns
+CREATE INDEX IF NOT EXISTS idx_volume_thumbnail_id ON public.volume (thumbnail_id);
+CREATE INDEX IF NOT EXISTS idx_chapter_volume_id ON public.chapter (volume_id);
+CREATE INDEX IF NOT EXISTS idx_chapter_thumbnail_id ON public.chapter (thumbnail_id);
+CREATE INDEX IF NOT EXISTS idx_page_chapter_id ON public.page (chapter_id);
+CREATE INDEX IF NOT EXISTS idx_page_background_id ON public.page (background_id);
+CREATE INDEX IF NOT EXISTS idx_page_thumbnail_id ON public.page (thumbnail_id);
+CREATE INDEX IF NOT EXISTS idx_page_music_track_id ON public.page (music_track_id);
+CREATE INDEX IF NOT EXISTS idx_music_track_media_asset_id ON public.music_track (media_asset_id);
+CREATE INDEX IF NOT EXISTS idx_entity_thumbnail_id ON public.entity (thumbnail_id);
+CREATE INDEX IF NOT EXISTS idx_kb_chunk_entity_id ON public.kb_chunk (entity_id);
+CREATE INDEX IF NOT EXISTS idx_kb_chunk_unlock_page_id ON public.kb_chunk (unlock_page_id);
+CREATE INDEX IF NOT EXISTS idx_character_image_entity_id ON public.character_image (entity_id);
+CREATE INDEX IF NOT EXISTS idx_character_image_media_asset_id ON public.character_image (media_asset_id);
+CREATE INDEX IF NOT EXISTS idx_page_character_page_id ON public.page_character (page_id);
+CREATE INDEX IF NOT EXISTS idx_page_character_character_image_id ON public.page_character (character_image_id);
