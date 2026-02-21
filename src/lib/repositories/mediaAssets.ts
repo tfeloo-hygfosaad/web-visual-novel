@@ -11,21 +11,21 @@ type MediaAssetRow = Tables['media_asset']['Row'];
 
 export function createMediaAsset(
   client: SupabaseClient<Database>,
-  data: MediaAssetInsert
+  data: MediaAssetInsert,
 ): Promise<Result<MediaAssetRow>> {
   return create(client, 'media_asset', data);
 }
 
 export function getMediaAsset(
   client: SupabaseClient<Database>,
-  id: string
+  id: string,
 ): Promise<Result<MediaAssetRow>> {
   return readOne(client, 'media_asset', id);
 }
 
 export function deleteMediaAsset(
   client: SupabaseClient<Database>,
-  id: string
+  id: string,
 ): Promise<Result<null>> {
   return deleteOne(client, 'media_asset', id);
 }

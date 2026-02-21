@@ -1,6 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 
-import { create,deleteOne, readOne } from '@lib/repositories/crud';
+import { create, deleteOne, readOne } from '@lib/repositories/crud';
 
 import type { Result } from '@lib/repositories/types';
 import type { Database } from '@lib/supabase/types';
@@ -11,22 +11,21 @@ type PageRow = Tables['page']['Row'];
 
 export function createPage(
   client: SupabaseClient<Database>,
-  data: PageInsert
+  data: PageInsert,
 ): Promise<Result<PageRow>> {
-  return create(client, 'page', data)
+  return create(client, 'page', data);
 }
 
 export function readPage(
   client: SupabaseClient<Database>,
-  id: string
+  id: string,
 ): Promise<Result<PageRow>> {
-  return readOne(client, 'page', id)
+  return readOne(client, 'page', id);
 }
 
 export function deletePage(
   client: SupabaseClient<Database>,
-  id: string
+  id: string,
 ): Promise<Result<null>> {
-  return deleteOne(client, 'page', id)
+  return deleteOne(client, 'page', id);
 }
-
