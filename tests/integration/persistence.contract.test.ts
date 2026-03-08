@@ -1,6 +1,6 @@
 import { describe, it, expect, afterEach } from 'vitest';
 
-import { createMediaAsset, getMediaAsset, deleteMediaAsset } from '@lib/repositories/mediaAssets';
+import { createMediaAsset, getMediaAsset, deleteMediaAsset } from '@lib/repositories/tables/mediaAssets';
 import { getEditor, getReader } from '@tests/integration/utils';
 
 import type { Database } from '@lib/supabase/types';

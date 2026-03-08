@@ -1,9 +1,9 @@
-import { callSafely } from '@lib/repositories/utils';
+import { callSafely } from '@/lib/repositories/core/utils';
 
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 import type { Database } from '@lib/supabase/types';
-import type { Result } from '@lib/repositories/types';
+import type { Result } from '@/lib/repositories/core/types';
 
 type Tables = Database['public']['Tables'];
 

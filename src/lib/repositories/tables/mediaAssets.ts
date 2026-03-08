@@ -1,8 +1,8 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 
-import { create, readOne, deleteOne } from '@lib/repositories/crud';
+import { create, readOne, deleteOne } from '@/lib/repositories/core/crud';
 
-import type { Result } from '@lib/repositories/types';
+import type { Result } from '@/lib/repositories/core/types';
 import type { Database } from '@lib/supabase/types';
 
 type Tables = Database['public']['Tables'];

@@ -1,4 +1,4 @@
-import { Result } from '@lib/repositories/types';
+import { Result } from '@/lib/repositories/core/types';
 
 export async function callSafely<T>(fn: () => PromiseLike<{ data: T | null, error: Error | null }>): Promise<Result<T>> {
   try {
