@@ -1,6 +1,6 @@
 import type { PostgrestError } from '@supabase/supabase-js';
 
-import { Result } from '@lib/repositories/core/types';
+export type Result<T> = { success: true, data: T } | { success: false, error: string };
 
 interface SupabaseResponse<T> {
   data: T | null,

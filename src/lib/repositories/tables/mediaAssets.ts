@@ -1,31 +1,80 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 
-import { create, readOne, deleteOne } from '@/lib/repositories/core/crud';
-
-import type { Result } from '@/lib/repositories/core/types';
+import { callSafely, type Result } from '@lib/repositories/utils';
 import type { Database } from '@lib/supabase/types';
 
-type Tables = Database['public']['Tables'];
-type MediaAssetInsert = Tables['media_asset']['Insert'];
-type MediaAssetRow = Tables['media_asset']['Row'];
+type Client = SupabaseClient<Database>;
+
+type Row = Database['public']['Tables']['media_asset']['Row'];
+type Insert = Database['public']['Tables']['media_asset']['Insert'];
+type Update = Database['public']['Tables']['media_asset']['Update'];
 
 export function createMediaAsset(
-  client: SupabaseClient<Database>,
-  data: MediaAssetInsert,
-): Promise<Result<MediaAssetRow>> {
-  return create(client, 'media_asset', data);
+  client: Client,
+  values: Insert,
+): Promise<Result<Row>> {
+  return callSafely(
+    () =>
+      client
+        .from('media_asset')
+        .insert(values)
+        .select()
+        .single(),
+  );
 }
 
 export function getMediaAsset(
-  client: SupabaseClient<Database>,
-  id: string,
-): Promise<Result<MediaAssetRow>> {
-  return readOne(client, 'media_asset', id);
+  client: Client,
+  id: Row['id'],
+): Promise<Result<Row>> {
+  return callSafely(
+    () =>
+      client
+        .from('media_asset')
+        .select()
+        .eq('id', id)
+        .single(),
+  );
+}
+
+export function getMediaAssets(
+  client: Client,
+): Promise<Result<Row[]>> {
+  return callSafely(
+    () =>
+      client
+        .from('media_asset')
+        .select()
+        .order('created_at', { ascending: false }),
+  );
+}
+
+export function updateMediaAsset(
+  client: Client,
+  id: Row['id'],
+  values: Update,
+): Promise<Result<Row>> {
+  return callSafely(
+    () =>
+      client
+        .from('media_asset')
+        .update(values)
+        .eq('id', id)
+        .select()
+        .single(),
+  );
 }
 
 export function deleteMediaAsset(
-  client: SupabaseClient<Database>,
-  id: string,
+  client: Client,
+  id: Row['id'],
 ): Promise<Result<null>> {
-  return deleteOne(client, 'media_asset', id);
+  return callSafely(async () => {
+    const { error } = await client
+      .from('media_asset')
+      .delete()
+      .eq('id', id);
+
+    return { data: null, error };
+  });
 }
