@@ -31,6 +31,8 @@ const eslintConfig = defineConfig([
       '@stylistic/arrow-parens': ['error', 'always'],
       '@stylistic/brace-style': ['error', '1tbs'],
       '@stylistic/function-paren-newline': ['error', 'consistent'],
+      '@stylistic/function-call-argument-newline': ['error', 'consistent'],
+      '@stylistic/function-call-paren-newline': ['error', 'multiline'],
       '@stylistic/linebreak-style': 'off',
       '@stylistic/max-len': [
         'error',
