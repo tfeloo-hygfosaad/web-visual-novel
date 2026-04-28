@@ -96,7 +96,7 @@ CREATE TABLE entity (
 CREATE TABLE kb_chunk (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   entity_id uuid NOT NULL REFERENCES entity(id) ON DELETE CASCADE,
-  unlock_page_id uuid REFERENCES page(id),
+  unlock_page_id uuid NOT NULL REFERENCES page(id),
   position int NOT NULL,
   content text NOT NULL,
   UNIQUE (entity_id, position)

@@ -130,21 +130,21 @@ export type Database = {
           entity_id: string
           id: string
           position: number
-          unlock_page_id: string | null
+          unlock_page_id: string
         }
         Insert: {
           content: string
           entity_id: string
           id?: string
           position: number
-          unlock_page_id?: string | null
+          unlock_page_id: string
         }
         Update: {
           content?: string
           entity_id?: string
           id?: string
           position?: number
-          unlock_page_id?: string | null
+          unlock_page_id?: string
         }
         Relationships: [
           {
