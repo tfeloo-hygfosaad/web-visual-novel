@@ -187,7 +187,7 @@ Fields:
 
 ---
 
-# 6. Story Structure
+# 6. Text System
 
 Each page contains a relatively small amount of text.
 
