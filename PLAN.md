@@ -175,8 +175,7 @@ Fields:
 Fields:
 
 - chapter_id
-- position
-- global_position
+- position (use gaps of 1000 for insertions)
 - title (optional)
 - content
 - background_id
@@ -261,17 +260,17 @@ No registration required for readers.
 
 Use cookies/local storage.
 
-Store:
+Stored data:
 
-- current page
-- settings
-- unlocked state
+- `furthest_page_index`: The highest calculated offset (0-based) the user has reached.
+- `current_page_id`: The UUID of the page currently being viewed.
+- settings: Text speed, volume, etc.
 
-Rules:
+Navigation Rules:
 
-- if no progress → start at page 1
-- user can manually jump to any allowed page
-- clearing cookies resets progress
+- Jump to Page: Users can input a "Book Page Number." The app will fetch that page using a database OFFSET.  
+- Linear Flow: Clicking "Next" finds the next highest position in the current chapter, or the first page of the next chapter.  
+- Reset: Clearing cookies resets `furthest_page_index`.
 
 Optional future:
 cloud sync account

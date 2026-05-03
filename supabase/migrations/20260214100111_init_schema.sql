@@ -64,8 +64,7 @@ CREATE TABLE page (
   status page_status NOT NULL DEFAULT 'draft',
   music_behavior music_behavior NOT NULL DEFAULT 'continue',
   music_track_id uuid,
-  global_position int NOT NULL UNIQUE,
-  position int NOT NULL,
+  position bigint NOT NULL,
   content text NOT NULL,
   UNIQUE (chapter_id, position)
 );

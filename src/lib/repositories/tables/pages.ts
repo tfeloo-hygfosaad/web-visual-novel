@@ -89,3 +89,44 @@ export function publishPage(
     status: 'published',
   });
 }
+
+export async function getPageByGlobalNumber(
+  client: Client,
+  offset: number,
+): Promise<Result<Row>> {
+  return callSafely(
+    () =>
+      client
+        .from('page')
+        .select(`
+          *,
+          chapter!inner (
+            position,
+            volume!inner (position)
+          )
+        `)
+        // Sort by Volume, then Chapter, then Page position
+        .order('position', { referencedTable: 'chapter.volume', ascending: true })
+        .order('position', { referencedTable: 'chapter', ascending: true })
+        .order('position', { ascending: true })
+        .range(offset, offset)
+        .single(),
+  );
+}
+
+export async function getTotalPageCount(
+  client: Client,
+  onlyPublished = true,
+): Promise<Result<number>> {
+  return callSafely(async () => {
+    let query = client.from('page').select('*', { count: 'exact', head: true });
+
+    if (onlyPublished) {
+      query = query.eq('status', 'published');
+    }
+
+    const { count, error } = await query;
+
+    return { data: count ?? 0, error };
+  });
+}
